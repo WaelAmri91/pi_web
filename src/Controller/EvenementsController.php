@@ -27,10 +27,55 @@ class EvenementsController extends AbstractController
     }
 
     /**
+     * @Route ("/myEvents/{id}", name="myEvents")
+     */
+    public function showMyEvents(Request $request, EvenementRepository $evenementRepository, $id):Response{
+return $this->render('evenement/myEvents_index.html.twig', [
+    'evenement' => $evenementRepository->findByIdUser($id)
+]);
+    }
+
+    /**
+     * @Route ("/admin/events", name="admin_events")
+     */
+    public function adminIndex(Request $request, EvenementRepository $evenementRepository):Response{
+        return $this->render('evenement/admin_events.html.twig', [
+            'evenements' => $evenementRepository->findNotAcceptedEvents()
+        ]);
+    }
+
+
+    /**
+     * @Route("/admin/events/accept/{id}", name="event_accepted", methods={"GET" , "POST"})
+     */
+    public function acceptEvent(int $id): Response
+    {
+        $event= $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $event->setEtat("Accepted");
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($event);
+        $entityManager->flush();
+        return $this->redirectToRoute('admin_events');
+    }
+    /**
+     * @Route("/admin/events/decline/{id}", name="event_declined", methods={"GET" , "POST"})
+     */
+    public function declineOrder(int $id): Response
+    {$event= $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $event->setEtat("Declined");
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($event);
+        $entityManager->flush();
+        return $this->redirectToRoute('admin_events');
+
+    }
+
+
+    /**
      * @return \Symfony\Component\HttpFoundation\Response
      * @route("/Affiche",name="Affiche")
      */
-    public function Affiche(Request $request){
+    public function Affiche(Request $request, EvenementRepository $evenementRepository){
         $propertySearch = new PropertySearch();
         $form = $this->createForm(PropertySearchType::class,$propertySearch);
         $form->handleRequest($request);
@@ -61,7 +106,7 @@ class EvenementsController extends AbstractController
 
 
 
-        return  $this->render('evenement/affiche.html.twig',[ 'form' =>$form->createView(), 'evenement' => $articles]);
+        return  $this->render('evenement/affiche.html.twig',[ 'form' =>$form->createView(), 'evenement' => $evenementRepository->findAcceptedEvents()]);
 
     }
 
