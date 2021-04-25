@@ -113,7 +113,7 @@ return $this->render('evenement/myEvents_index.html.twig', [
     /**
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
-     * @route("evenement/Add")
+     * @route("myEvents/evenement/Add")
      */
 
     function Add(Request $request){
