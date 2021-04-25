@@ -121,7 +121,7 @@ return $this->render('evenement/myEvents_index.html.twig', [
         $form=$this->createForm(EvenementFormType::class,$evenement);
         $form->add('Ajouter',SubmitType::class) ;
         $form->handleRequest($request);
-
+$evenement->setEtat("Pending");
         if($form->isSubmitted() && $form->isValid()){
             $em=$this->getDoctrine()->getManager();
             $em->persist($evenement);
